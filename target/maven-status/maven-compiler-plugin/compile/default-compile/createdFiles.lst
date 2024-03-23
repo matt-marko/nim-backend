@@ -1,0 +1,4 @@
+org\mm\HighScoreEntity.class
+org\mm\HighScoreResource.class
+org\mm\WebSocket.class
+META-INF\panache-archive.marker
