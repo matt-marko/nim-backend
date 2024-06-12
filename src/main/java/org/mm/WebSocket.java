@@ -38,55 +38,6 @@ public class WebSocket {
 
         // Notify the user that the connection has been opened
         broadcastToSession(MessageConstants.CONNECTION_OPENED + " " + username, session);
-
-        /*if (gameCode.isEmpty()) {
-            String generatedGameCode = generateGameCode();
-
-            WebSocketUser user = new WebSocketUser();
-           
-            user.setGameCode(generatedGameCode);
-            user.setUsername(username);
-            user.setSession(session);
-
-            users.add(user);
-
-            broadcast("CODE: " + generatedGameCode, generatedGameCode);
-        } else {
-            boolean gameFound = false;
-            for (WebSocketUser user : users) {
-                if (user.getGameCode().equals(gameCode)) {
-                    WebSocketUser joiningUser = new WebSocketUser();
-           
-                    joiningUser.setGameCode(user.getGameCode());
-                    joiningUser.setUsername(username);
-                    joiningUser.setSession(session);    
-
-                    users.add(joiningUser);
-
-                    // Notify user that they have successfully joined
-                    broadcastToSession("GAME-JOINED: " + user.getGameCode(), session);
-
-                    // Notify the user with the name of their opponent
-                    broadcastToSession("OPPONENT-NAME: " + user.getUsername(), session);         
-
-                    // Notify host that an opponent has joined
-                    broadcastToSession("OPPONENT-NAME: " + joiningUser.getUsername(), user.getSession());
-
-                    gameFound = true;
-                    break;
-                }
-            }
-
-            if (!gameFound) {
-                broadcastToSession("GAME-NOT-FOUND: " + gameCode, session);
-
-                try {
-                    session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "Invalid game code"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
     }
 
     @OnClose
@@ -96,8 +47,10 @@ public class WebSocket {
         @PathParam("gameCode") String gameCode
     ) {
         this.removeUser(username, gameCode);
-        // TODO change this message
-        broadcast("User " + username + " left", gameCode);
+        broadcast(MessageConstants.USER_LEFT + " " + username, gameCode);
+
+        // TODO remove this
+        System.out.println("User " + username + " Left");
     }
 
     @OnError
@@ -126,6 +79,7 @@ public class WebSocket {
             Optional<WebSocketUser> creatingUser = this.getUser(username, gameCode);
 
             if (creatingUser.isPresent()) {
+                creatingUser.get().setHost(true);
                 games.put(gameCode, List.of(creatingUser.get()));
 
                 // Notify user that they have successfully created a game
@@ -137,17 +91,29 @@ public class WebSocket {
 
             if (joiningUser.isPresent()) {
                 if (gameToJoin != null) {
+                    joiningUser.get().setHost(false);
                     List<WebSocketUser> updatedGame = List.of(gameToJoin.get(0), joiningUser.get());
 
                     games.put(gameCode, updatedGame);
 
                     // Notify user that they have successfully joined a game
                     broadcastToSession(MessageConstants.GAME_JOINED + " " + gameCode, joiningUser.get().getSession());
+
+                    // Notify the user the name of their opponent
+                    broadcastToSession(MessageConstants.OPPONENT_NAME + " " + updatedGame.get(0).getUsername(), joiningUser.get().getSession());  
+
+                    // Notify host that an opponent has joined
+                    broadcastToSession(MessageConstants.OPPONENT_NAME + " " + joiningUser.get().getUsername(),  updatedGame.get(0).getSession()); 
                 } else {
                     // Notify user that the game was not found
                     broadcastToSession(MessageConstants.GAME_NOT_FOUND + " " + gameCode, joiningUser.get().getSession());
                 }
             }
+        } else if (message.contains(MessageConstants.START_GAME)) {
+            final String gameToStart = message.split(" ")[1];
+            
+            // Notify the players that the game has successfully been started
+            broadcast(MessageConstants.GAME_STARTED, gameToStart);
         }
     }
 

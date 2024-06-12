@@ -6,6 +6,7 @@ public class WebSocketUser {
     private Session session;
     private String username;
     private String gameCode;
+    private boolean host;
     
     public Session getSession() {
         return this.session;
@@ -19,6 +20,10 @@ public class WebSocketUser {
         return this.username;
     }
 
+    public boolean getHost() {
+        return this.host;
+    }
+
     public void setSession(Session session) {
         this.session = session;
     }
@@ -29,5 +34,9 @@ public class WebSocketUser {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setHost(boolean host) {
+        this.host = host;
     }
 }
