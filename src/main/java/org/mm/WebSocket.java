@@ -202,11 +202,6 @@ public class WebSocket {
     }
 
     private Optional<WebSocketUser> getUser(Session session) {
-        /*return users.stream()
-            .filter(user -> user.getUsername().equals(username))
-            .filter(user -> user.getGameCode().equals(gameCode))
-            .findFirst();*/
-
         return users.stream()
             .filter(user -> user.getSession().getId().equals(session.getId()))
             .findFirst();
