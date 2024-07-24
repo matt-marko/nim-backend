@@ -1,0 +1,20 @@
+name: Deploy to Heroku
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{secrets.HEROKU_ACCESS_TOKEN}}
+          heroku_app_name: "nim-matt-backend"
+          heroku_email: ${{secrets.EMAIL}}
