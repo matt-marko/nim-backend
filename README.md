@@ -8,7 +8,9 @@ Link to application: https://nim-angular.netlify.app/
 
 ## Information
 
-This is the backend component of the nim game, which handles the saving of high scores. The application exposes a REST API by which to do this, and persists high scores in a PostgreSQL database.
+This is the backend component of the nim game, which handles the saving of high scores by exposing a REST API and persisting high scores in a PostgreSQL database.
+
+The backend also includes a WebSocket server to let users play the game online. To save on hosting time, the connections to the server will automatically close after two minutes of inactivity.
 
 ## Local Setup
 
